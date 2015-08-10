@@ -1,0 +1,41 @@
+.smart-select {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #E0E0E0;
+    border-radius: 3px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.smart-select-wrap {
+    padding: 1px;
+    cursor: text;
+}
+
+.smart-select-value {
+    display: inline-block;
+    background-color: #eee;
+    height: 1em;
+    padding: 2px 5px;
+    border-radius: 3px;
+    border: 1px solid #E4E4E4;
+    vertical-align: top;
+    line-height: 1em;
+    color: #555;
+    cursor: pointer;
+}
+
+.smart-select-wrap input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    height: 1em;
+    line-height: 1em;
+    padding: 4px 1px;
+    margin: 2px;
+    max-width: 100%;
+    min-width: 10px;
+}
+
+.smart-select-value, .smart-select-wrap input {
+    margin: 2px;
+}
