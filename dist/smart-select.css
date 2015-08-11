@@ -1,6 +1,7 @@
-.smart-select, .smart-select *{
+.smart-select, .smart-select * {
     box-sizing: border-box;
 }
+
 .smart-select {
     display: inline-block;
     position: relative;
@@ -35,7 +36,7 @@
     position: relative;
 }
 
-.smart-select-value .smart-select-value-title{
+.smart-select-value .smart-select-value-title {
     margin-right: 10px;
 }
 
