@@ -1,39 +1,69 @@
+.smart-select, .smart-select *{
+    box-sizing: border-box;
+}
 .smart-select {
     display: inline-block;
     position: relative;
     border: 1px solid #E0E0E0;
     border-radius: 3px;
     font-family: Arial, Helvetica, sans-serif;
+    max-width: 100%;
+    width: 100%;
 }
 
 .smart-select-wrap {
     padding: 1px;
     cursor: text;
+    max-width: 100%;
+    margin-right: 4px;
 }
 
 .smart-select-value {
     display: inline-block;
     background-color: #eee;
-    height: 1em;
-    padding: 2px 5px;
+    height: 1.5em;
+    padding: 0px 10px 0px 5px;
     border-radius: 3px;
     border: 1px solid #E4E4E4;
     vertical-align: top;
-    line-height: 1em;
+    line-height: 1.5em;
     color: #555;
     cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.smart-select-value .smart-select-value-title{
+    margin-right: 10px;
+}
+
+.smart-select-value .smart-select-value-remove {
+    font-weight: bold;
+    color: #999;
+    line-height: 1em;
+    font-size: .92857143em;
+    position: absolute;
+    left: 100%;
+    margin-left: -12px;
+    top: 5px;
+}
+
+.smart-select-value-remove:hover {
+    color: #000;
 }
 
 .smart-select-wrap input {
     background-color: transparent;
     border: none;
     outline: none;
-    height: 1em;
-    line-height: 1em;
-    padding: 4px 1px;
-    margin: 2px;
+    height: 24px;
+    line-height: 1.5em;
+    padding: 4px 0px;
     max-width: 100%;
     min-width: 10px;
+    margin-left: 5px !important;
 }
 
 .smart-select-value, .smart-select-wrap input {
