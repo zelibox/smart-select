@@ -226,6 +226,7 @@ angular.module('smartSelect', [])
                                 index = $scope.handler.getValues().indexOf($scope.value) + 1;
                                 break;
                         }
+
                         if ($scope.handler.getValues()[index]) {
                             $scope.handler.focusValue = $scope.handler.getValues()[index]
                         } else {
