@@ -236,7 +236,6 @@ angular.module('smartSelect', [])
                         $scope.remove();
                     }
                 };
-
                 $scope.$watch(
                     function () {
                         return $scope.handler.focusValue
