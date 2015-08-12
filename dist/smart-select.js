@@ -94,7 +94,7 @@ angular.module('smartSelect', [])
                    ng-blur="timeoutUpdate(); handler.focusInput = false;"\
                    ng-cut="timeoutUpdate()"\
                    ng-paste="timeoutUpdate()"\
-                   ng-keydown="keyDown($event)">',
+                   ng-keydown="onKeyDown($event)">',
             link: function ($scope, $element, $attr, $smartSelectCtrl) {
                 $scope.handler = $smartSelectCtrl.handler;
                 var wrapper = angular.element('#smart-select-input-wrapper');
@@ -145,7 +145,7 @@ angular.module('smartSelect', [])
                     }
                 }
 
-                $scope.keyDown = function ($event) {
+                $scope.onKeyDown = function ($event) {
                     switch ($event.which) {
                         case 13: // enter
                             if ($scope.handler.createValue($scope.query)) {
@@ -156,11 +156,12 @@ angular.module('smartSelect', [])
                             }
                             break;
                         case 8: // backspace
+                        case 37: // prev
                             if (getPos($element[0]) == 0) {
                                 //focus last
                                 $scope.handler.focusValue = $scope.handler.getValues()[$scope.handler.getValues().length - 1]
                             }
-                            event.preventDefault();
+                            $event.stopPropagation();
                             break;
                     }
                 };
@@ -217,25 +218,38 @@ angular.module('smartSelect', [])
                 };
 
                 $scope.onKeyDown = function ($event) {
-                    if ($event.which == 8 || $event.which == 46) {
-                        var index;
-                        switch ($event.which) {
-                            case 8:
-                                index = $scope.handler.getValues().indexOf($scope.value) - 1;
-                                break;
-                            case 46:
-                                index = $scope.handler.getValues().indexOf($scope.value) + 1;
-                                break;
-                        }
+                    var index = null;
+                    var isRemove = false;
 
+                    switch ($event.which) {
+                        case 8: // backspace
+                            index = $scope.handler.getValues().indexOf($scope.value) - 1;
+                            isRemove = true;
+                            break;
+                        case 37: // prev
+                            index = $scope.handler.getValues().indexOf($scope.value) - 1;
+                            break;
+                        case 46: // delete
+                            index = $scope.handler.getValues().indexOf($scope.value) + 1;
+                            isRemove = true;
+                            break;
+                        case 39: // next
+                            index = $scope.handler.getValues().indexOf($scope.value) + 1;
+                            break;
+                    }
+
+                    if (index != null) {
                         if ($scope.handler.getValues()[index]) {
                             $scope.handler.focusValue = $scope.handler.getValues()[index]
                         } else {
                             $scope.handler.focusValue = null;
                             $scope.handler.focusInput = true;
                         }
-                        $scope.remove();
-                        $event.preventDefault();
+
+                        if (isRemove) {
+                            $scope.remove();
+                        }
+                        $event.stopPropagation();
                     }
                 };
                 $scope.$watch(
