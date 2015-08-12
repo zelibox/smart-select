@@ -249,6 +249,7 @@ angular.module('smartSelect', [])
                         if (isRemove) {
                             $scope.remove();
                         }
+
                         $event.stopPropagation();
                     }
                 };
