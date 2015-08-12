@@ -155,11 +155,12 @@ angular.module('smartSelect', [])
                                 })
                             }
                             break;
-                        case 8:
+                        case 8: // backspace
                             if (getPos($element[0]) == 0) {
                                 //focus last
                                 $scope.handler.focusValue = $scope.handler.getValues()[$scope.handler.getValues().length - 1]
                             }
+                            event.preventDefault();
                             break;
                     }
                 };
@@ -234,6 +235,7 @@ angular.module('smartSelect', [])
                             $scope.handler.focusInput = true;
                         }
                         $scope.remove();
+                        $event.preventDefault();
                     }
                 };
                 $scope.$watch(
