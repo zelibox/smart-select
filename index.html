@@ -10,7 +10,8 @@
     <script>
         angular.module('smartSelectTestApp', ['smartSelect']).controller('smartSelectTestController', function ($scope, smartSelectHandler) {
             $scope.smartSelectHandler = smartSelectHandler({
-                multiple: true
+                //values: ['111', 'ololo'],
+                //onCreateValue: function() { return false }
             });
             console.log('smartSelectTestController init');
         });

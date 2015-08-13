@@ -70,3 +70,49 @@
 .smart-select-value, .smart-select-wrap input {
     margin: 2px;
 }
+
+.smart-select-input-wrapper {
+    position: fixed;
+    top: -999px;
+    left: 0;
+}
+
+.smart-select-input-wrapper span {
+    white-space:pre;
+}
+
+.smart-select-list-container, .smart-select-list-container * {
+    box-sizing: border-box;
+}
+
+.smart-select-list-container{
+    position: absolute;
+    outline: none;
+    background-color: #fff;
+    border: 1px solid #E0E0E0;
+    border-top: none;
+    overflow: auto;
+    max-height: 200px;
+    border-radius: 0px 0px 3px 3px;
+}
+
+.smart-select-list {
+    margin: 0;
+    padding: 0px;
+    list-style: none;
+}
+
+.smart-select-list .smart-select-list-item{
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    height: 1.5em;
+    line-height: 1.5em;
+    padding: 0px 10px;
+    cursor: pointer;
+}
+
+.smart-select-list .smart-select-list-item-active {
+    background-color: #f8f8f8;
+}

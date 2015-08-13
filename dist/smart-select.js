@@ -2,8 +2,9 @@ angular.module('smartSelect', [])
     .factory('smartSelectHandler', function () {
         function SmartSelectHandler(options) {
             var config = angular.merge({
-                multiple: false,
+                multiple: true,
                 values: [],
+                defaultValues: [1, 2, 3, 4, 5, 546, 88, 435, 43534534, 44345, 'dfgdfgdfg'],
                 onCreateValue: function (query) {
                     //todo promise
                     if (typeof(query) != 'string') {
@@ -14,6 +15,9 @@ angular.module('smartSelect', [])
                         return false;
                     }
                     return query;
+                },
+                onRemoveValue: function (value) {
+                    return true;
                 },
                 checkUnique: function (compareValue) {
                     var flag = true;
@@ -38,16 +42,35 @@ angular.module('smartSelect', [])
                 return flag;
             };
 
+            this.getListItems = function () {
+                var listItems = [];
+                angular.forEach(config.defaultValues, function(e) {
+                    if (config.checkUnique(e)) {
+                        listItems.push(e);
+                    }
+                });
+                return listItems;
+            };
+
+            this.selectListItem = function (item) {
+                config.values.push(item);
+                this.activeSelectListItem = null;
+            };
+
             this.getValues = function () {
                 return config.values;
             };
 
             this.removeValue = function (value) {
-                config.values.splice(config.values.indexOf(value), 1);
+                if (config.onRemoveValue(value) !== false) {
+                    config.values.splice(config.values.indexOf(value), 1);
+                }
             };
 
-            this.focusInput = false;
-            this.focusValue = null; //todo
+            this.focusInput = false; // todo refactor
+            this.focusValue = null; // todo refactor
+            this.activeSelectListItem = null; // todo refactor
+
         }
 
         return function (options) {
@@ -62,7 +85,7 @@ angular.module('smartSelect', [])
             },
             template: '\
             <div class="smart-select">\
-                <div ng-click="focusInput($event)" class="smart-select-wrap">\
+                <div ng-mousedown="focusInput($event)" class="smart-select-wrap">\
                     <smart-select-value value="value" ng-repeat="value in handler.getValues()"></smart-select-value>\
                     <smart-select-input></smart-select-input>\
                 </div>\
@@ -74,121 +97,9 @@ angular.module('smartSelect', [])
                 $scope.focusInput = function ($event) {
                     if ($event.currentTarget == $event.target) {
                         $scope.handler.focusInput = true;
+                        $event.preventDefault();
                     }
                 };
-            }
-        }
-    })
-    .directive('smartSelectInput', function ($timeout) {
-        //todo custom template
-        return {
-            restrict: 'E',
-            replace: true,
-            require: '^smartSelect',
-            scope: {},
-            template: '\
-            <input type="text"\
-                   ng-trim="false"\
-                   ng-model="query"\
-                   ng-focus="handler.focusInput = true;"\
-                   ng-blur="timeoutUpdate(); handler.focusInput = false;"\
-                   ng-cut="timeoutUpdate()"\
-                   ng-paste="timeoutUpdate()"\
-                   ng-keydown="onKeyDown($event)">',
-            link: function ($scope, $element, $attr, $smartSelectCtrl) {
-                $scope.handler = $smartSelectCtrl.handler;
-                var wrapper = angular.element('#smart-select-input-wrapper');
-                if (!wrapper.length) {
-                    wrapper = angular.element('<div id="smart-select-input-wrapper" style="position:fixed; top:-999px; left:0;"></div>');
-                    angular.element('body').append(wrapper);
-                }
-                var mirror = angular.element('<span style="white-space:pre;"></span>');
-                angular.forEach([
-                    'fontFamily',
-                    'fontSize',
-                    'fontWeight',
-                    'fontStyle',
-                    'letterSpacing',
-                    'textTransform',
-                    'wordSpacing',
-                    'textIndent',
-                    'boxSizing',
-                    'borderRightWidth',
-                    'borderLeftWidth',
-                    'borderLeftStyle',
-                    'borderRightStyle',
-                    'paddingLeft',
-                    'paddingRight',
-                    'marginLeft',
-                    'marginRight'
-                ], function (value) {
-                    mirror.css(value, $element.css(value));
-                });
-                wrapper.append(mirror);
-                function update(text) {
-                    text = text ? text : ' ';
-                    mirror.text(text || $attr.placeholder);
-                    $element.css('width', mirror.outerWidth() + 1);
-                }
-
-                $scope.query = null;
-
-                function getPos(element) {
-                    if ('selectionStart' in element) {
-                        return element.selectionStart;
-                    } else if (document.selection) {
-                        element.focus();
-                        var sel = document.selection.createRange();
-                        var selLen = document.selection.createRange().text.length;
-                        sel.moveStart('character', -element.value.length);
-                        return sel.text.length - selLen;
-                    }
-                }
-
-                $scope.onKeyDown = function ($event) {
-                    switch ($event.which) {
-                        case 13: // enter
-                            if ($scope.handler.createValue($scope.query)) {
-                                $scope.query = null;
-                                $timeout(function () {
-                                    $element.css('width', 0);
-                                })
-                            }
-                            break;
-                        case 8: // backspace
-                        case 37: // prev
-                            if (getPos($element[0]) == 0) {
-                                //focus last
-                                $scope.handler.focusValue = $scope.handler.getValues()[$scope.handler.getValues().length - 1]
-                            }
-                            $event.stopPropagation();
-                            break;
-                    }
-                };
-                $scope.$watch('query', function (newText) {
-                    update(newText);
-                });
-
-                $scope.timeoutUpdate = function () {
-                    $timeout(function () {
-                        update($scope.query);
-                    })
-                };
-
-                $scope.$watch(
-                    function () {
-                        return $smartSelectCtrl.handler.focusInput
-                    },
-                    function (isFocus) {
-                        if (isFocus) {
-                            $element.focus();
-                        }
-                    }
-                );
-
-                $scope.$on('$destroy', function () {
-                    mirror.remove();
-                });
             }
         }
     })
@@ -250,7 +161,7 @@ angular.module('smartSelect', [])
                             $scope.remove();
                         }
 
-                        $event.stopPropagation();
+                        $event.preventDefault();
                     }
                 };
                 $scope.$watch(
@@ -265,4 +176,196 @@ angular.module('smartSelect', [])
                 );
             }
         }
-    });
+    })
+    .directive('smartSelectInput', function ($timeout, $compile) {
+        return {
+            restrict: 'E',
+            replace: true,
+            require: '^smartSelect',
+            scope: {},
+            template: '\
+            <input type="text"\
+                   ng-trim="false"\
+                   ng-model="query"\
+                   ng-focus="onFocus()"\
+                   ng-blur="onBlur()"\
+                   ng-cut="timeoutUpdate()"\
+                   ng-paste="timeoutUpdate()"\
+                   ng-keydown="onKeyDown($event)">',
+            link: function ($scope, $element, $attr, $smartSelectCtrl) {
+                $scope.query = null;
+                var wrapper = angular.element('.smart-select-input-wrapper');
+                if (!wrapper.length) {
+                    wrapper = angular.element('<div class="smart-select-input-wrapper"></div>');
+                    angular.element('body').append(wrapper);
+                }
+                var mirror = angular.element('<span></span>');
+                angular.forEach([
+                    'fontFamily',
+                    'fontSize',
+                    'fontWeight',
+                    'fontStyle',
+                    'letterSpacing',
+                    'textTransform',
+                    'wordSpacing',
+                    'textIndent',
+                    'boxSizing',
+                    'borderRightWidth',
+                    'borderLeftWidth',
+                    'borderLeftStyle',
+                    'borderRightStyle',
+                    'paddingLeft',
+                    'paddingRight',
+                    'marginLeft',
+                    'marginRight'
+                ], function (value) {
+                    mirror.css(value, $element.css(value));
+                });
+                wrapper.append(mirror);
+
+                var selectList = angular.element('\
+                    <div ng-show="isFocus && handler.getListItems().length"\
+                         tabindex="1" \
+                         ng-focus="isFocus = true" \
+                         ng-blur="isFocus = false" \
+                         ng-style="style"\
+                         class="smart-select-list-container">\
+                        <smart-select-list></smart-select-list>\
+                    </div>'
+                );
+                var selectListScope = $scope.$new();
+                selectListScope.handler = $smartSelectCtrl.handler;
+                angular.element('body').append(selectList);
+                $compile(selectList)(selectListScope);
+
+
+                function getPos(element) {
+                    if ('selectionStart' in element) {
+                        return element.selectionStart;
+                    } else if (document.selection) {
+                        element.focus();
+                        var sel = document.selection.createRange();
+                        var selLen = document.selection.createRange().text.length;
+                        sel.moveStart('character', -element.value.length);
+                        return sel.text.length - selLen;
+                    }
+                }
+
+                function update(text) {
+                    text = text ? text : ' ';
+                    mirror.text(text || $attr.placeholder);
+                    $element.css('width', mirror.outerWidth() + 1);
+                }
+
+                function timeoutUpdate() {
+                    $timeout(function () {
+                        update($scope.query);
+                    })
+                }
+
+                function updateSelectListPosition() {
+                    $timeout(function () {
+                        var smartSelectElement = $element.closest('.smart-select');
+                        selectListScope.style = {
+                            width: smartSelectElement.outerWidth(true),
+                            top: smartSelectElement.offset().top + smartSelectElement.height(),
+                            left: smartSelectElement.offset().left
+                        };
+                    });
+                }
+
+                $scope.onKeyDown = function ($event) {
+                    switch ($event.which) {
+                        case 13: // enter
+                            if ($smartSelectCtrl.handler.activeSelectListItem) {
+                                $smartSelectCtrl.handler.selectListItem($smartSelectCtrl.handler.activeSelectListItem);
+                                $scope.query = null;
+                                $timeout(function () {
+                                    $element.css('width', 0);
+                                });
+
+                                //todo refactor
+                                var index = $smartSelectCtrl.handler.getListItems().indexOf($smartSelectCtrl.handler.activeSelectListItem);
+                                $smartSelectCtrl.handler.activeSelectListItem = $smartSelectCtrl.handler.getListItems()[index + 1]
+
+                            } else if ($smartSelectCtrl.handler.createValue($scope.query)) {
+                                $scope.query = null;
+                                $timeout(function () {
+                                    $element.css('width', 0);
+                                })
+                            }
+                            break;
+                        case 8: // backspace
+                        case 37: // prev
+                            if (getPos($element[0]) == 0) {
+                                $smartSelectCtrl.handler.focusValue = $smartSelectCtrl.handler.getValues()[$smartSelectCtrl.handler.getValues().length - 1];
+                                $event.originalEvent.preventDefault();
+                            }
+                            break;
+                        case 38: //up
+                            console.log('up'); // todo refactor!!!
+                            if ($smartSelectCtrl.handler.activeSelectListItem) {
+                                var index = $smartSelectCtrl.handler.getListItems().indexOf($smartSelectCtrl.handler.activeSelectListItem);
+                                $smartSelectCtrl.handler.activeSelectListItem = $smartSelectCtrl.handler.getListItems()[index - 1]
+                            }
+                            break;
+                        case 40: // down
+                            console.log('down'); // todo refactor!!!
+                            if ($smartSelectCtrl.handler.activeSelectListItem) {
+                                var index = $smartSelectCtrl.handler.getListItems().indexOf($smartSelectCtrl.handler.activeSelectListItem);
+                                $smartSelectCtrl.handler.activeSelectListItem = $smartSelectCtrl.handler.getListItems()[index + 1]
+                            } else {
+                                $smartSelectCtrl.handler.activeSelectListItem = $smartSelectCtrl.handler.getListItems()[0]
+                            }
+                            break;
+                    }
+                    updateSelectListPosition()
+                };
+                $scope.$watch('query', function (newText) {
+                    update(newText);
+                });
+
+                $scope.$watch(
+                    function () {
+                        return $smartSelectCtrl.handler.focusInput
+                    },
+                    function (isFocus) {
+                        if (isFocus) {
+                            $element.focus();
+                        }
+                    }
+                );
+                $scope.onFocus = function () {
+                    $smartSelectCtrl.handler.focusInput = true;
+                    selectListScope.isFocus = true;
+                    updateSelectListPosition()
+                };
+                $scope.onBlur = function () {
+                    timeoutUpdate();
+                    $smartSelectCtrl.handler.focusInput = false;
+                    selectListScope.isFocus = false;
+                };
+                $scope.$on('$destroy', function () {
+                    mirror.remove();
+                });
+            }
+        }
+    })
+    .directive('smartSelectList', function () {
+        return {
+            restrict: 'E',
+            replace: true,
+            template: '\
+            <ul class="smart-select-list">\
+                <li ng-bind="value"\
+                    class="smart-select-list-item" \
+                    ng-class="{\'smart-select-list-item-active\': handler.activeSelectListItem == value}" \
+                    ng-mouseover="handler.activeSelectListItem = value"\
+                    ng-repeat="value in handler.getListItems()"></li>\
+            </ul>',
+            link: function ($scope) {
+                console.log($scope);
+            }
+        }
+    })
+;
