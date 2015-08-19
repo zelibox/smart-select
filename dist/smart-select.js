@@ -4,7 +4,27 @@ angular.module('smartSelect', [])
             var config = angular.merge({
                 multiple: true,
                 values: [],
-                defaultValues: [1, 2, 3, 4, 5, 546, 88, 435, 43534534, 44345, 'dfgdfgdfg'],
+                defaultValues: [
+                    "Rosalyn Cantu",
+                    "Waters Mcclain",
+                    "Lara Melendez",
+                    "Blanchard Arnold",
+                    "Warren Orr",
+                    "Kim Daniels",
+                    "Cornelia Montoya",
+                    "Cara Rhodes",
+                    "Boyle Ryan",
+                    "Karina Cherry",
+                    "Miller Ellis",
+                    "Bianca Miles",
+                    "Mann Suarez",
+                    "Farrell Vinson",
+                    "Cecelia Sanchez",
+                    "Mcintyre Kent",
+                    "Calhoun Newman",
+                    "Briggs Curtis",
+                    "Etta Ramos",
+                    "Maritza Mckee"],
                 onCreateValue: function (query) {
                     //todo promise
                     if (typeof(query) != 'string') {
@@ -44,7 +64,7 @@ angular.module('smartSelect', [])
 
             this.getListItems = function () {
                 var listItems = [];
-                angular.forEach(config.defaultValues, function(e) {
+                angular.forEach(config.defaultValues, function (e) {
                     if (config.checkUnique(e)) {
                         listItems.push(e);
                     }
@@ -298,6 +318,7 @@ angular.module('smartSelect', [])
                         case 8: // backspace
                         case 37: // prev
                             if (getPos($element[0]) == 0) {
+                                //todo if selection text..
                                 $smartSelectCtrl.handler.focusValue = $smartSelectCtrl.handler.getValues()[$smartSelectCtrl.handler.getValues().length - 1];
                                 $event.originalEvent.preventDefault();
                             }
@@ -322,6 +343,7 @@ angular.module('smartSelect', [])
                     updateSelectListPosition()
                 };
                 $scope.$watch('query', function (newText) {
+                    $smartSelectCtrl.handler.activeSelectListItem = null;
                     update(newText);
                 });
 
@@ -335,6 +357,13 @@ angular.module('smartSelect', [])
                         }
                     }
                 );
+
+                $scope.$watch(function () {
+                    return $smartSelectCtrl.handler.getValues().length;
+                }, function(){
+                    updateSelectListPosition();
+                });
+
                 $scope.onFocus = function () {
                     $smartSelectCtrl.handler.focusInput = true;
                     selectListScope.isFocus = true;
@@ -347,6 +376,7 @@ angular.module('smartSelect', [])
                 };
                 $scope.$on('$destroy', function () {
                     mirror.remove();
+                    selectList.remove();
                 });
             }
         }
@@ -361,6 +391,7 @@ angular.module('smartSelect', [])
                     class="smart-select-list-item" \
                     ng-class="{\'smart-select-list-item-active\': handler.activeSelectListItem == value}" \
                     ng-mouseover="handler.activeSelectListItem = value"\
+                    ng-click="handler.selectListItem(value)"\
                     ng-repeat="value in handler.getListItems()"></li>\
             </ul>',
             link: function ($scope) {
