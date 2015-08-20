@@ -24,7 +24,16 @@
                         return this.name + ' <' + this.email + '>'
                     }
                 }],
-                onCreateValue: function() { return false }
+                onCreateValue: function() { return false },
+                checkUnique: function (compareValue) {
+                    var flag = true;
+                    angular.forEach(this.values, function (e) {
+                        if (e.email == compareValue.email) {
+                            flag = false;
+                        }
+                    });
+                    return flag;
+                }
             });
             console.log('smartSelectTestController init');
         });
