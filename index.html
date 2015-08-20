@@ -10,8 +10,21 @@
     <script>
         angular.module('smartSelectTestApp', ['smartSelect']).controller('smartSelectTestController', function ($scope, smartSelectHandler) {
             $scope.smartSelectHandler = smartSelectHandler({
-                //values: ['111', 'ololo'],
-                //onCreateValue: function() { return false }
+                values: [{
+                    name: 'Mark',
+                    email: 'mark@fmf.com',
+                    toString: function () {
+                        return this.name + ' <' + this.email + '>'
+                    }
+                }],
+                defaultValues: [{
+                    name: 'Mark',
+                    email: 'mark@fmf.com',
+                    toString: function () {
+                        return this.name + ' <' + this.email + '>'
+                    }
+                }],
+                onCreateValue: function() { return false }
             });
             console.log('smartSelectTestController init');
         });
@@ -19,7 +32,12 @@
 </head>
 <body ng-app="smartSelectTestApp" ng-controller="smartSelectTestController" style="background-color: #eee;">
 <div style="width: 500px; height: 500px; position: absolute; left: 50%; margin-left: -250px; margin-top: 50px; background: #fff; padding: 25px;">
-    <smart-select handler="smartSelectHandler"></smart-select>
+    <span ng-init="test = 123"></span>
+    <smart-select handler="smartSelectHandler">
+        <smart-select-list-item>
+            <span ng-bind="item.name"></span> - <strong ng-bind="item.email"></strong>
+        </smart-select-list-item>
+    </smart-select>
 </div>
 </body>
 </html>
