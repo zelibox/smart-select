@@ -364,7 +364,6 @@ angular.module('smartSelect', [])
                 };
 
                 angular.element(window).resize(function() {
-                    console.log('resize');
                     updateSelectListPosition();
                 });
 
