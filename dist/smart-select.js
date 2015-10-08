@@ -362,6 +362,12 @@ angular.module('smartSelect', [])
                     selectListScope.isFocus = true;
                     updateSelectListPosition()
                 };
+
+                angular.element(window).resize(function() {
+                    console.log('resize');
+                    updateSelectListPosition();
+                });
+
                 $scope.onBlur = function () {
                     $scope.timeoutUpdate();
                     $smartSelectCtrl.handler.focusInput = false;
